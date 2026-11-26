@@ -12,7 +12,7 @@ export default function ComingSoonPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
@@ -22,10 +22,32 @@ export default function ComingSoonPage() {
     }
 
     setSubmitting(true);
-    setTimeout(() => {
-      setSubmitting(false);
+    try {
+      const response = await fetch("https://formsubmit.co/ajax/autoa.labs5@gmail.com", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          _replyto: email,
+          role,
+          _subject: `[AUTOAI LABS Early Access] ${email}`,
+          message: `Early access notification request from ${email} (${role}).`,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Subscription failed");
+      }
+
       setSubscribed(true);
-    }, 700);
+    } catch {
+      setError("Could not register automatically right now. Please email autoa.labs5@gmail.com.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const categories = [

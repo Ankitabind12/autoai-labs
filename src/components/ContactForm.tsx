@@ -15,7 +15,7 @@ export default function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
@@ -31,10 +31,33 @@ export default function ContactForm() {
 
     setIsSubmitting(true);
 
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      const response = await fetch("https://formsubmit.co/ajax/autoa.labs5@gmail.com", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          _replyto: formData.email,
+          _subject: `[AUTOAI LABS Contact] ${formData.subject} — ${formData.name}`,
+          inquiryType: formData.subject,
+          message: formData.message,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Submission failed");
+      }
+
       setSubmitted(true);
-    }, 700);
+    } catch {
+      setError("Could not send automatically right now. Please email us directly at autoa.labs5@gmail.com.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (submitted) {
@@ -43,9 +66,9 @@ export default function ContactForm() {
         <div className="w-12 h-12 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-400 flex items-center justify-center mx-auto">
           <CheckCircle2 className="w-6 h-6" />
         </div>
-        <h3 className="text-xl font-semibold text-white">Message Logged</h3>
+        <h3 className="text-xl font-semibold text-white">Message Sent</h3>
         <p className="text-sm text-zinc-300 max-w-sm mx-auto leading-relaxed">
-          Thank you, <span className="text-white font-medium">{formData.name}</span>. Your inquiry regarding <span className="text-sky-400 font-mono text-xs">{formData.subject}</span> has been queued for our team.
+          Thank you, <span className="text-white font-medium">{formData.name}</span>. Your inquiry regarding <span className="text-sky-400 font-mono text-xs">{formData.subject}</span> has been forwarded to <span className="text-sky-300 font-mono text-xs">autoa.labs5@gmail.com</span>.
         </p>
         <button
           type="button"

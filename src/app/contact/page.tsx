@@ -78,7 +78,12 @@ export default function ContactPage() {
                 Primary Contact Channel
               </div>
               <div className="text-base sm:text-lg font-mono text-sky-300 font-medium">
-                contact@autoai-labs.com
+                <a
+                  href="mailto:autoa.labs5@gmail.com"
+                  className="hover:text-sky-200 underline decoration-sky-500/40 underline-offset-4 transition-colors"
+                >
+                  autoa.labs5@gmail.com
+                </a>
               </div>
               <p className="text-xs text-zinc-500 leading-relaxed">
                 Direct inquiries are answered within 1-2 business days. For supplier catalog submissions, please include company website and product domain.

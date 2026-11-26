@@ -28,7 +28,7 @@ export default function SupplierForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
@@ -45,11 +45,36 @@ export default function SupplierForm() {
 
     setIsSubmitting(true);
 
-    // Simulate safe frontend submission state
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      const response = await fetch("https://formsubmit.co/ajax/autoa.labs5@gmail.com", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          companyName: formData.companyName,
+          contactPerson: formData.contactPerson,
+          email: formData.businessEmail,
+          _replyto: formData.businessEmail,
+          phoneNumber: formData.phoneNumber || "Not provided",
+          website: formData.website || "Not provided",
+          productCategory: formData.category,
+          _subject: `[AUTOAI LABS Supplier] ${formData.companyName} (${formData.category})`,
+          message: formData.message,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Submission failed");
+      }
+
       setSubmitted(true);
-    }, 800);
+    } catch {
+      setError("Could not send automatically right now. Please email us directly at autoa.labs5@gmail.com.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (submitted) {
@@ -60,7 +85,7 @@ export default function SupplierForm() {
         </div>
         <h3 className="text-xl font-semibold text-white">Inquiry Received</h3>
         <p className="text-sm text-zinc-300 max-w-md mx-auto leading-relaxed">
-          Thank you, <span className="text-white font-medium">{formData.contactPerson}</span> from <span className="text-white font-medium">{formData.companyName}</span>. Your supplier onboarding inquiry for the <span className="text-sky-400 font-mono text-xs">{formData.category}</span> category has been logged.
+          Thank you, <span className="text-white font-medium">{formData.contactPerson}</span> from <span className="text-white font-medium">{formData.companyName}</span>. Your supplier onboarding inquiry for the <span className="text-sky-400 font-mono text-xs">{formData.category}</span> category has been sent to <span className="text-sky-300 font-mono text-xs">autoa.labs5@gmail.com</span>.
         </p>
         <p className="text-xs text-zinc-500 font-mono pt-2">
           NOTE: Our partnership team reviews all submissions as supplier agreements and product categorization are prepared for the platform launch.
